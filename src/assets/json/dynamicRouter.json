@@ -910,6 +910,50 @@
 			]
 		},
 		{
+			"path": "/performance",
+			"name": "performance",
+			"redirect": "/performance/memory",
+			"meta": {
+				"icon": "Odometer",
+				"title": "性能数据",
+				"isLink": "",
+				"isHide": false,
+				"isFull": false,
+				"isAffix": false,
+				"isKeepAlive": true
+			},
+			"children": [
+				{
+					"path": "/performance/memory",
+					"name": "memory",
+					"component": "/performance/memoryData/index",
+					"meta": {
+						"icon": "Menu",
+						"title": "内存Memory",
+						"isLink": "",
+						"isHide": false,
+						"isFull": false,
+						"isAffix": false,
+						"isKeepAlive": true
+					}
+				},
+				{
+					"path": "/performance/fps",
+					"name": "fps",
+					"component": "/performance/fpsData/index",
+					"meta": {
+						"icon": "Menu",
+						"title": "帧率FPS",
+						"isLink": "",
+						"isHide": false,
+						"isFull": false,
+						"isAffix": false,
+						"isKeepAlive": true
+					}
+				}
+			]
+		},
+		{
 			"path": "/link",
 			"name": "link",
 			"redirect": "/link/gitee",

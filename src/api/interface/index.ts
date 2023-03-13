@@ -1,3 +1,5 @@
+import internal from "stream";
+
 // * 请求响应参数(不包含data)
 export interface Result {
 	code: string;
@@ -89,5 +91,15 @@ export namespace User {
 		id: string;
 		name: string;
 		children?: ResDepartment[];
+	}
+}
+
+// * 性能数据模块
+export namespace Performance {
+	export interface ResMemory {
+		userId: internal;
+		id: internal;
+		title: string;
+		completed: boolean;
 	}
 }

@@ -34,7 +34,8 @@ const router = createRouter({
  * */
 router.beforeEach(async (to, from, next) => {
 	const globalStore = GlobalStore();
-
+	// console.log("from", from.fullPath);
+	// console.log("to", to.fullPath);
 	// 1.NProgress 开始
 	NProgress.start();
 
