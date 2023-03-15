@@ -40,6 +40,7 @@ export namespace Login {
 	}
 	export interface ResLogin {
 		access_token: string;
+		username: string;
 	}
 	export interface ResAuthButtons {
 		[key: string]: string[];

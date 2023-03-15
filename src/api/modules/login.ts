@@ -10,6 +10,14 @@ import http from "@/api";
  */
 // * 用户登录
 export const loginApi = (params: Login.ReqLoginForm) => {
+	// return {
+	// 	code: 200,
+	// 	data: {
+	// 		access_token: "bqddxxwqmfncffacvbpkuxvwvqrhln"
+	// 	},
+	// 	msg: "成功"
+	// };
+	return http.post<Login.ResLogin>(`/login`, params, { headers: { noLoading: true } }); // 正常 post json 请求  ==>  application/json
 	return http.post<Login.ResLogin>(PORT1 + `/login`, params, { headers: { noLoading: true } }); // 正常 post json 请求  ==>  application/json
 	return http.post<Login.ResLogin>(PORT1 + `/login`, params, { headers: { noLoading: true } }); // 控制当前请求不显示 loading
 	return http.post<Login.ResLogin>(PORT1 + `/login`, {}, { params }); // post 请求携带 query 参数  ==>  ?username=admin&password=123456
