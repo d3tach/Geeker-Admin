@@ -56,6 +56,7 @@ class RequestHttp {
 				if (data.code == ResultEnum.OVERDUE) {
 					ElMessage.error(data.msg);
 					globalStore.setToken("");
+					globalStore.setUserInfo("");
 					router.replace(LOGIN_URL);
 					return Promise.reject(data);
 				}

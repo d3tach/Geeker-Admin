@@ -21,6 +21,7 @@ const globalStore = GlobalStore();
 
 const handleToLogin = () => {
 	globalStore.setToken("");
+	globalStore.setUserInfo("");
 	router.push(LOGIN_URL);
 };
 </script>
