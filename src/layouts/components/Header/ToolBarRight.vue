@@ -8,7 +8,7 @@
 			<Message id="message" />
 			<Fullscreen id="fullscreen" />
 		</div>
-		<span class="username">Geeker</span>
+		<span class="username">{{ username }}</span>
 		<Avatar />
 	</div>
 </template>
@@ -21,6 +21,9 @@ import Language from "./components/Language.vue";
 import ThemeSetting from "./components/ThemeSetting.vue";
 import AssemblySize from "./components/AssemblySize.vue";
 import Avatar from "./components/Avatar.vue";
+import { GlobalStore } from "@/stores";
+const globalStore = GlobalStore();
+const username = globalStore.userInfo.username;
 </script>
 
 <style scoped lang="scss">
