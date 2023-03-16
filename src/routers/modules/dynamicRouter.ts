@@ -16,7 +16,7 @@ export const initDynamicRouter = async () => {
 	const globalStore = GlobalStore();
 	try {
 		// 1.获取菜单列表 && 按钮权限（可合并到一个接口获取，根据后端不同可自行改造）
-		await authStore.getAuthMenuList();
+		await authStore.getAuthMenuList({ role: globalStore.userInfo?.role ?? "None" });
 		await authStore.getAuthButtonList();
 
 		// 2.判断当前用户有没有菜单权限
@@ -28,6 +28,7 @@ export const initDynamicRouter = async () => {
 				duration: 3000
 			});
 			globalStore.setToken("");
+			globalStore.setUserInfo("");
 			router.replace(LOGIN_URL);
 			return Promise.reject("No permission");
 		}
@@ -47,6 +48,7 @@ export const initDynamicRouter = async () => {
 	} catch (error) {
 		// 💢 当按钮 || 菜单请求出错时，重定向到登陆页
 		globalStore.setToken("");
+		globalStore.setUserInfo("");
 		router.replace(LOGIN_URL);
 		return Promise.reject(error);
 	}

@@ -69,6 +69,7 @@ const login = (formEl: FormInstance | undefined) => {
 			// 1.执行登录接口
 			const { data } = await loginApi({ ...loginForm, password: md5(loginForm.password) });
 			globalStore.setToken(data.access_token);
+			globalStore.setUserInfo(data.userInfo);
 
 			// 2.添加动态路由
 			await initDynamicRouter();
@@ -81,7 +82,7 @@ const login = (formEl: FormInstance | undefined) => {
 			router.push(HOME_URL);
 			ElNotification({
 				title: getTimeState(),
-				message: "欢迎登录 " + data.username,
+				message: "欢迎登录 " + (globalStore.userInfo.username ? globalStore.userInfo.username : ""),
 				type: "success",
 				duration: 3000
 			});

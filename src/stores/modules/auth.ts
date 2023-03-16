@@ -34,8 +34,8 @@ export const AuthStore = defineStore({
 			this.authButtonList = data;
 		},
 		// getAuthMenuList
-		async getAuthMenuList() {
-			const { data } = await getAuthMenuListApi();
+		async getAuthMenuList(params: any) {
+			const { data } = await getAuthMenuListApi(params);
 			this.authMenuList = data;
 		},
 		// setRouteName
