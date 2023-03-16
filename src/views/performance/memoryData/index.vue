@@ -1,7 +1,7 @@
 <template>
-	<div ref="echartsRef" class="card content-box"></div>
-	<div class="content-box">
-		<el-button type="primary" size="default" @click="update_option()">测试按钮</el-button>
+	<div class="card content-box">
+		<div ref="echartsRef" style="width: 100%; height: 90%"></div>
+		<el-button type="primary" size="default" @click="updateOption()">测试按钮</el-button>
 	</div>
 </template>
 
@@ -126,8 +126,9 @@ onMounted(() => {
 	useEcharts(myChart.value, option);
 });
 
-const update_option = () => {
+const updateOption = () => {
+	console.log("test");
 	option.series[0].data = option.series[0].data = [260, 147, 135, 218, 224, 230, 150];
-	useEcharts(myChart.value, option);
+	myChart.value.setOption(option);
 };
 </script>
