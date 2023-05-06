@@ -8,6 +8,7 @@ export interface Result {
 
 // * 请求响应参数(包含data)
 export interface ResultData<T = any> extends Result {
+	map(arg0: (editor: any) => { label: any; value: any }): unknown;
 	data: T;
 }
 
@@ -98,6 +99,20 @@ export namespace User {
 
 // * 性能数据模块
 export namespace Performance {
+	export interface ResEditor {
+		editor_id: string;
+		editor_version: string;
+	}
+	export interface ResCaseName {
+		case_name: string;
+	}
+	export interface ResDevice {
+		device_id: string;
+		name: string;
+	}
+	export interface ResFPS {
+		[key: string]: string[];
+	}
 	export interface ResMemory {
 		userId: internal;
 		id: internal;

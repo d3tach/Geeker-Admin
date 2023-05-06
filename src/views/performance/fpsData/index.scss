@@ -1,13 +1,16 @@
+.result {
+	margin-top: 20px;
+	font-size: 17px;
+	font-weight: bold;
+	color: var(--el-text-color-regular);
+}
 .select-filter {
 	width: 100%;
 	.select-filter-item {
 		display: flex;
 		align-items: center;
-		border-bottom: 1px dashed var(--el-border-color-light);
 
-		// &:last-child {
-		// 	border-bottom: none;
-		// }
+		// border-bottom: 1px dashed var(--el-border-color-light);
 		.select-filter-item-title {
 			margin-top: -2px;
 			span {
@@ -58,6 +61,13 @@
 				span {
 					white-space: nowrap;
 				}
+			}
+			.el-date-picker {
+				height: 30px;
+				margin-right: 100px;
+				background-color: transparent !important;
+				border-color: #80ffff;
+				box-shadow: 1px 1px 5px 1px rgb(128 255 255 / 80%) inset;
 			}
 		}
 	}
