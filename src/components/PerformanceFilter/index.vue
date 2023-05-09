@@ -2,15 +2,14 @@
 	<SelectFilter :data="filterData" @change="changeFilter" :defaultValues="filterResult" />
 	<div class="select-filter">
 		<div class="select-filter-item">
-			<div class="select-filter-item-title"><span>日期 ：</span></div>
-
-			<div class="select-filter-date-picker">
-				<el-date-picker v-model="date_value" type="date" placeholder="选择日期" @change="handleDateChange"> </el-date-picker>
+			<div class="left">
+				<div class="select-filter-item-title">
+					<span>日期 ：</span>
+					<el-date-picker v-model="date_value" type="date" placeholder="选择日期" @change="handleDateChange"></el-date-picker>
+				</div>
 			</div>
-			<SelectFilter :data="performanceTypeData"></SelectFilter>
-			<div>
-				<el-button type="primary" size="large">请求数据</el-button>
-			</div>
+			<div class="middle"><SelectFilter :data="performanceTypeData"></SelectFilter></div>
+			<div class="right"><el-button type="primary" size="large">请求数据</el-button></div>
 		</div>
 	</div>
 </template>

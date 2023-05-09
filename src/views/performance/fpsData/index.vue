@@ -101,7 +101,7 @@ const get_data = async (): Promise<void> => {
 		const resultData = await FPSApi(param);
 		deal_option_data(resultData);
 	} catch (error) {
-		myChart.setOption(defaultOption);
+		myChart.clear();
 		console.log("请求数据时出错", error);
 	}
 	// finally {
@@ -110,6 +110,7 @@ const get_data = async (): Promise<void> => {
 };
 
 const deal_option_data = datas => {
+	myChart.clear(); //先清理图表
 	chartOption.xAxis.data = datas[0].time_data;
 	chartOption.legend.data = [];
 	chartOption.series = [];
