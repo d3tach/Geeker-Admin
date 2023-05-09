@@ -4,10 +4,9 @@
 		display: flex;
 		align-items: center;
 		border-bottom: 1px dashed var(--el-border-color-light);
-
-		// &:last-child {
-		// 	border-bottom: none;
-		// }
+		&:last-child {
+			border-bottom: none;
+		}
 		.select-filter-item-title {
 			margin-top: -2px;
 			span {

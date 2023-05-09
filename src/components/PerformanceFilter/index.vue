@@ -3,33 +3,38 @@
 	<div class="select-filter">
 		<div class="select-filter-item">
 			<div class="select-filter-item-title"><span>日期 ：</span></div>
-			<el-scrollbar>
-				<div class="select-filter-list">
-					<el-date-picker
-						v-model="date_value"
-						type="daterange"
-						unlink-panels
-						range-separator="至"
-						start-placeholder="开始日期"
-						end-placeholder="结束日期"
-						@change="handleDateChange"
-					>
-					</el-date-picker>
-				</div>
-			</el-scrollbar>
+
+			<div class="select-filter-date-picker">
+				<el-date-picker v-model="date_value" type="date" placeholder="选择日期" @change="handleDateChange"> </el-date-picker>
+			</div>
+			<SelectFilter :data="performanceTypeData"></SelectFilter>
+			<div>
+				<el-button type="primary" size="large">请求数据</el-button>
+			</div>
 		</div>
 	</div>
 </template>
 
-<script setup lang="ts" name="selectFilter">
+<script setup lang="ts" name="PerformanceFilter">
 import { ref } from "vue";
 import SelectFilter from "@/components/SelectFilter/index.vue";
-import { EditorApi, CaseNameApi, DeviceApi } from "@/api/modules/performance";
+import { EditorApi, ProjectNameApi, CaseNameApi, DeviceApi } from "@/api/modules/performance";
 
 const filterData = ref([
 	{
 		title: "editor版本",
 		key: "editor_id",
+		multiple: false,
+		options: [
+			{
+				label: "None",
+				value: ""
+			}
+		]
+	},
+	{
+		title: "项目名",
+		key: "project_name",
 		multiple: true,
 		options: [
 			{
@@ -52,11 +57,41 @@ const filterData = ref([
 	{
 		title: "设备名",
 		key: "device_id",
-		multiple: true,
+		multiple: false,
 		options: [
 			{
 				label: "None",
 				value: ""
+			}
+		]
+	}
+]);
+
+const performanceTypeData = ref([
+	{
+		title: "数据类型",
+		key: "type_id",
+		multiple: false,
+		options: [
+			{
+				label: "None",
+				value: ""
+			},
+			{
+				label: "FPS",
+				value: "FPS"
+			},
+			{
+				label: "内存",
+				value: "memory"
+			},
+			{
+				label: "CPU",
+				value: "cpu"
+			},
+			{
+				label: "GPU",
+				value: "gpu"
 			}
 		]
 	}
@@ -70,7 +105,7 @@ const changeFilter = (val: typeof filterResult.value) => {
 	filterResult.value = {};
 	// 如果新数据中不存在某个属性，则从原始数据中获取该属性并添加到新数据中
 	for (const [key, value] of Object.entries(newFilterResult)) {
-		if (value[0] !== "") {
+		if (value && value[0]) {
 			filterResult.value[key] = value;
 		}
 	}
@@ -87,6 +122,16 @@ const getEditors = async (): Promise<void> => {
 	filterResult.value["editor_id"] = [options[1].value];
 };
 
+// Project Name
+const getProjectNames = async () => {
+	const projectNames: any = await ProjectNameApi();
+	const options = [{ label: "None", value: "" }];
+	for (let i = 0; i < projectNames.length; i++) {
+		options.push({ label: projectNames[i], value: projectNames[i] });
+	}
+	filterData.value[1].options = options;
+};
+
 // Case Name
 const getCaseNames = async () => {
 	const caseNames: any = await CaseNameApi();
@@ -94,26 +139,28 @@ const getCaseNames = async () => {
 	for (let i = 0; i < caseNames.length; i++) {
 		options.push({ label: caseNames[i], value: caseNames[i] });
 	}
-	filterData.value[1].options = options;
+	filterData.value[2].options = options;
 };
 
 // Device
 const getDevices = async () => {
 	const devices: any = await DeviceApi();
 	const options = [{ label: "None", value: "" }, ...devices.map(device => ({ label: device.name, value: device.device_id }))];
-	filterData.value[2].options = options;
+	filterData.value[3].options = options;
 };
 
 // 日期
-const date_value = ref<Array<Date>>([]);
+let date_value = ref<string | null>(null);
 const initDate = () => {
-	const now = new Date(); // 获取当前日期
-	const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000); // 获取前一周日期
-	const startDate = [oneWeekAgo, now]; // 开始日期为前一周到今天
-	date_value.value = startDate; // 设置日期范围为开始日期到结束日期
-	handleDateChange(date_value.value);
+	const today = new Date();
+	const year = today.getFullYear();
+	const month = today.getMonth() + 1;
+	const day = today.getDate();
+	const formattedDate = `${year}-${month.toString().padStart(2, "0")}-${day.toString().padStart(2, "0")}`;
+	date_value.value = formattedDate;
+	handleDateChange(today);
 };
-const handleDateChange = (value: Array<Date>) => {
+const handleDateChange = value => {
 	if (value === null) {
 		if (filterResult.value.hasOwnProperty("date")) {
 			// 如果 filterResult 中拥有 date 属性，则删除该属性
@@ -121,24 +168,47 @@ const handleDateChange = (value: Array<Date>) => {
 		}
 		return;
 	}
-	const startDate = value[0];
-	const endDate = value[1];
-	const dateArr = [];
+	const date = new Date(value);
+	const year = date.getFullYear();
+	const month = date.getMonth() + 1;
+	const day = date.getDate();
+	const formattedDate = `${year}-${month.toString().padStart(2, "0")}-${day.toString().padStart(2, "0")}`;
 
-	// 遍历开始日期到结束日期，将每个日期添加到数组中
-	for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
-		const year = d.getFullYear();
-		const month = ("0" + (d.getMonth() + 1)).slice(-2);
-		const day = ("0" + d.getDate()).slice(-2);
-		dateArr.push(`${year}-${month}-${day}`);
-	}
-
-	filterResult.value.date = dateArr;
-
-	return dateArr;
+	filterResult.value.date = [formattedDate];
 };
 
+//数据请求
+// enum PerformanceDataType {
+// 	FPS = "fps",
+// 	Memory = "memory"
+// }
+// const get_data = async (dataType: PerformanceDataType): Promise<void> => {
+// 	filterPerformanceResult.value = performanceFilterRef.value.filterResult;
+// 	const param = { types: [dataType], ...filterPerformanceResult.value };
+// 	try {
+// 		let resultData;
+// 		// 根据 dataType 判断要调用哪个 API
+// 		switch (dataType) {
+// 			case PerformanceDataType.FPS:
+// 				resultData = await FPSApi(param);
+// 				break;
+// 			case PerformanceDataType.Memory:
+// 				resultData = await MemoryApi(param);
+// 				break;
+// 			default:
+// 				throw new Error("未知的性能数据类型");
+// 		}
+// 		deal_option_data(resultData);
+// 	} catch (error) {
+// 		myChart.setOption(defaultOption);
+// 		console.log("请求数据时出错", error);
+// 	} finally {
+// 		console.log(defaultOption);
+// 	}
+// };
+
 getEditors();
+getProjectNames();
 getCaseNames();
 getDevices();
 initDate();

@@ -103,9 +103,13 @@ export namespace Performance {
 		editor_id: string;
 		editor_version: string;
 	}
+	export interface ResProjectName {
+		project_name: string;
+	}
 	export interface ResCaseName {
 		case_name: string;
 	}
+
 	export interface ResDevice {
 		device_id: string;
 		name: string;

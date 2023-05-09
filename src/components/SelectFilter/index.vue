@@ -81,7 +81,7 @@ const emit = defineEmits<FilterEmits>();
 const select = (item: SelectDataProps, option: OptionsProps) => {
 	if (!item.multiple) {
 		// * 单选
-		if (selected.value[item.key] !== option.value) selected.value[item.key] = option.value;
+		if (selected.value[item.key] !== option.value) selected.value[item.key] = [option.value];
 	} else {
 		// * 多选
 		// 如果选中的是第一个值，则直接设置

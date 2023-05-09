@@ -4,6 +4,11 @@ import http from "@/api";
 export const EditorApi = () => {
 	return http.get<Performance.ResEditor>(`/get_all_editors`);
 };
+export const ProjectNameApi = () => {
+	const projectNames = http.get<Performance.ResCaseName>(`/get_all_project_names`);
+	// console.log(caseNames);
+	return projectNames;
+};
 
 export const CaseNameApi = () => {
 	const caseNames = http.get<Performance.ResCaseName>(`/get_all_case_names`);
