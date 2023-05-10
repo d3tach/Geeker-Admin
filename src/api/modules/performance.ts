@@ -19,7 +19,10 @@ export const DeviceApi = () => {
 	return http.get<Performance.ResDevice>(`/get_all_devices`);
 };
 export const FPSApi = params => {
-	return http.post<Performance.ResFPS>(`/get_performance_data`, params);
+	return http.post<Performance.ResData>(`/get_performance_data`, params);
+};
+export const PerformanceDataApi = params => {
+	return http.post<Performance.ResData>(`/get_performance_data`, params);
 };
 
 export const getMemoryApi = () => {

@@ -924,12 +924,12 @@
 			},
 			"children": [
 				{
-					"path": "/performance/memory",
-					"name": "memory",
-					"component": "/performance/memoryData/index",
+					"path": "/performance/switchPerformanceDaily",
+					"name": "switchPerformanceDaily",
+					"component": "/performance/switchPerformanceDaily/index",
 					"meta": {
 						"icon": "Menu",
-						"title": "内存Memory",
+						"title": "性能开关-日常均值",
 						"isLink": "",
 						"isHide": false,
 						"isFull": false,
@@ -938,12 +938,12 @@
 					}
 				},
 				{
-					"path": "/performance/fps",
-					"name": "fps",
-					"component": "/performance/fpsData/index",
+					"path": "/performance/switchPerformanceData",
+					"name": "switchPerformanceData",
+					"component": "/performance/switchPerformanceData/index",
 					"meta": {
 						"icon": "Menu",
-						"title": "帧率FPS",
+						"title": "性能开关数据",
 						"isLink": "",
 						"isHide": false,
 						"isFull": false,

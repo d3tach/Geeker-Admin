@@ -1,28 +1,19 @@
 <template>
 	<div class="card content-box">
-		<span class="text">fps（待完善） 🍓🍇🍈🍉</span>
-
-		<PerformanceFilter ref="performanceFilterRef"></PerformanceFilter>
-		<div>
-			<!-- <span class="result">params: {{ filterPerformanceResult }}</span> -->
-			<el-button type="primary" size="default" @click="get_data">请求数据</el-button>
-		</div>
+		<span class="text">性能开关数据</span>
+		<PerformanceFilter @update-filter-result="handleFilterChanged" @update-data-result="handleDataChanged"></PerformanceFilter>
 
 		<div ref="echartsRef" style="width: 100%; height: 90%"></div>
 	</div>
 </template>
 
-<script setup lang="ts" name="selectFilter">
+<script setup lang="ts" name="switchPerformanceData">
 import { ref, onMounted } from "vue";
 import * as echarts from "echarts";
 import { useEcharts } from "@/hooks/useEcharts";
-import { FPSApi } from "@/api/modules/performance";
+
 import PerformanceFilter from "@/components/PerformanceFilter/index.vue";
 import cloneDeep from "lodash/cloneDeep"; // 引入lodash库中的cloneDeep方法
-
-// 数据筛选
-const performanceFilterRef = ref(null);
-const filterPerformanceResult = ref({});
 
 //数据显示
 const echartsRef = ref<HTMLElement>();
@@ -87,26 +78,22 @@ const defaultOption = {
 	series: []
 };
 let chartOption = cloneDeep(defaultOption); // 使用对象解构创建新的对象
-
 onMounted(() => {
 	myChart = echarts.init(echartsRef.value as HTMLElement);
 	useEcharts(myChart, chartOption);
 });
 
 // 数据更新
-const get_data = async (): Promise<void> => {
-	filterPerformanceResult.value = performanceFilterRef.value.filterResult;
-	const param = { types: ["fps"], ...filterPerformanceResult.value };
-	try {
-		const resultData = await FPSApi(param);
-		deal_option_data(resultData);
-	} catch (error) {
-		myChart.clear();
-		console.log("请求数据时出错", error);
-	}
-	// finally {
-	// 	console.log(defaultOption);
-	// }
+const filterResult = ref();
+const handleFilterChanged = filter => {
+	filterResult.value = filter.value;
+	console.log("接受到filter", filterResult.value);
+};
+const handleDataChanged = newValue => {
+	const data = newValue.value;
+	console.log("接受到data", data);
+
+	deal_option_data(data);
 };
 
 const deal_option_data = datas => {

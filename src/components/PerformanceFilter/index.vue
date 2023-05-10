@@ -8,22 +8,24 @@
 					<el-date-picker v-model="date_value" type="date" placeholder="选择日期" @change="handleDateChange"></el-date-picker>
 				</div>
 			</div>
-			<div class="middle"><SelectFilter :data="performanceTypeData"></SelectFilter></div>
-			<div class="right"><el-button type="primary" size="large">请求数据</el-button></div>
+			<div class="middle">
+				<SelectFilter :data="performanceDataType" @change="changeFilter" :defaultValues="defaultType"></SelectFilter>
+			</div>
+			<div class="right"><el-button type="primary" size="large" @click="getTypeData">请求数据</el-button></div>
 		</div>
 	</div>
 </template>
 
 <script setup lang="ts" name="PerformanceFilter">
-import { ref } from "vue";
+import { ref, defineEmits } from "vue";
 import SelectFilter from "@/components/SelectFilter/index.vue";
 import { EditorApi, ProjectNameApi, CaseNameApi, DeviceApi } from "@/api/modules/performance";
-
+import { PerformanceDataApi } from "@/api/modules/performance";
 const filterData = ref([
 	{
 		title: "editor版本",
 		key: "editor_id",
-		multiple: false,
+		multiple: true,
 		options: [
 			{
 				label: "None",
@@ -56,7 +58,7 @@ const filterData = ref([
 	{
 		title: "设备名",
 		key: "device_id",
-		multiple: false,
+		multiple: true,
 		options: [
 			{
 				label: "None",
@@ -66,19 +68,15 @@ const filterData = ref([
 	}
 ]);
 
-const performanceTypeData = ref([
+const performanceDataType = ref([
 	{
 		title: "数据类型",
-		key: "type_id",
+		key: "types",
 		multiple: false,
 		options: [
 			{
-				label: "None",
-				value: ""
-			},
-			{
 				label: "FPS",
-				value: "FPS"
+				value: "fps"
 			},
 			{
 				label: "内存",
@@ -98,7 +96,7 @@ const performanceTypeData = ref([
 
 const filterResult: any = ref({});
 
-const changeFilter = (val: typeof filterResult.value) => {
+const changeFilter = val => {
 	// 使用对象的扩展运算符将原始数据和新数据合并
 	const newFilterResult = { ...filterResult.value, ...val };
 	filterResult.value = {};
@@ -108,6 +106,7 @@ const changeFilter = (val: typeof filterResult.value) => {
 			filterResult.value[key] = value;
 		}
 	}
+	emit("updateFilterResult", filterResult);
 };
 // Editor
 const getEditors = async (): Promise<void> => {
@@ -165,6 +164,7 @@ const handleDateChange = value => {
 			// 如果 filterResult 中拥有 date 属性，则删除该属性
 			delete filterResult.value.date;
 		}
+		emit("updateFilterResult", filterResult);
 		return;
 	}
 	const date = new Date(value);
@@ -174,46 +174,36 @@ const handleDateChange = value => {
 	const formattedDate = `${year}-${month.toString().padStart(2, "0")}-${day.toString().padStart(2, "0")}`;
 
 	filterResult.value.date = [formattedDate];
+	emit("updateFilterResult", filterResult);
 };
 
 //数据请求
-// enum PerformanceDataType {
-// 	FPS = "fps",
-// 	Memory = "memory"
-// }
-// const get_data = async (dataType: PerformanceDataType): Promise<void> => {
-// 	filterPerformanceResult.value = performanceFilterRef.value.filterResult;
-// 	const param = { types: [dataType], ...filterPerformanceResult.value };
-// 	try {
-// 		let resultData;
-// 		// 根据 dataType 判断要调用哪个 API
-// 		switch (dataType) {
-// 			case PerformanceDataType.FPS:
-// 				resultData = await FPSApi(param);
-// 				break;
-// 			case PerformanceDataType.Memory:
-// 				resultData = await MemoryApi(param);
-// 				break;
-// 			default:
-// 				throw new Error("未知的性能数据类型");
-// 		}
-// 		deal_option_data(resultData);
-// 	} catch (error) {
-// 		myChart.setOption(defaultOption);
-// 		console.log("请求数据时出错", error);
-// 	} finally {
-// 		console.log(defaultOption);
-// 	}
-// };
+const emit = defineEmits(["updateDataResult", "updateFilterResult"]);
+const dataResult: any = ref([]);
+const defaultType = { types: ["fps"] };
+const initDataType = () => {
+	changeFilter(defaultType);
+};
+
+const getTypeData = async () => {
+	const param = filterResult.value;
+	console.log(param);
+	try {
+		dataResult.value = await PerformanceDataApi(param);
+	} catch (error) {
+		console.log(error);
+		dataResult.value = [];
+	} finally {
+		emit("updateDataResult", dataResult);
+	}
+};
 
 getEditors();
 getProjectNames();
 getCaseNames();
 getDevices();
 initDate();
-defineExpose({
-	filterResult
-});
+initDataType();
 </script>
 
 <style scoped lang="scss">
