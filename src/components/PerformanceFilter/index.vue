@@ -21,6 +21,8 @@ import { ref, defineEmits } from "vue";
 import SelectFilter from "@/components/SelectFilter/index.vue";
 import { EditorApi, ProjectNameApi, CaseNameApi, DeviceApi } from "@/api/modules/performance";
 import { PerformanceDataApi } from "@/api/modules/performance";
+import cloneDeep from "lodash/cloneDeep"; // 引入lodash库中的cloneDeep方法
+
 const filterData = ref([
 	{
 		title: "editor版本",
@@ -83,8 +85,12 @@ const performanceDataType = ref([
 				value: "memory"
 			},
 			{
-				label: "CPU",
-				value: "cpu"
+				label: "CPU使用率",
+				value: "cpu_use"
+			},
+			{
+				label: "CPU频率",
+				value: "cpu_freq"
 			},
 			{
 				label: "GPU",
@@ -128,6 +134,7 @@ const getProjectNames = async () => {
 		options.push({ label: projectNames[i], value: projectNames[i] });
 	}
 	filterData.value[1].options = options;
+	filterResult.value["project_name"] = [projectNames[0]];
 };
 
 // Case Name
@@ -138,6 +145,7 @@ const getCaseNames = async () => {
 		options.push({ label: caseNames[i], value: caseNames[i] });
 	}
 	filterData.value[2].options = options;
+	filterResult.value["case_name"] = [caseNames[0]];
 };
 
 // Device
@@ -145,6 +153,7 @@ const getDevices = async () => {
 	const devices: any = await DeviceApi();
 	const options = [{ label: "None", value: "" }, ...devices.map(device => ({ label: device.name, value: device.device_id }))];
 	filterData.value[3].options = options;
+	filterResult.value["device_id"] = ["ABJK022818007862"];
 };
 
 // 日期
@@ -186,8 +195,11 @@ const initDataType = () => {
 };
 
 const getTypeData = async () => {
-	const param = filterResult.value;
-	console.log(param);
+	const param = cloneDeep(filterResult.value);
+	if (param.types.some(type => type.indexOf("cpu") !== -1)) {
+		// types中存在"cpu",改为"cpu"
+		param.types = ["cpu"];
+	}
 	try {
 		dataResult.value = await PerformanceDataApi(param);
 	} catch (error) {
