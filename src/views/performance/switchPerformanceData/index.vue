@@ -392,7 +392,7 @@ const deal_cpu_freq = async data => {
 const deal_gpu_use = data => {
 	chartOption.yAxis.axisLabel = {
 		formatter: "{value}%",
-		margin: 20
+		margin: 15
 	};
 	for (let i = 0; i < data.length; i++) {
 		const item = data[i];

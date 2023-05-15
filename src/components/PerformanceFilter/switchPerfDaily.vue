@@ -5,7 +5,16 @@
 			<div class="left">
 				<div class="select-filter-item-title">
 					<span>日期 ：</span>
-					<el-date-picker v-model="date_value" type="date" placeholder="选择日期" @change="handleDateChange"></el-date-picker>
+					<el-date-picker
+						v-model="date_value"
+						type="daterange"
+						unlink-panels
+						range-separator="至"
+						start-placeholder="开始日期"
+						end-placeholder="结束日期"
+						@change="handleDateChange"
+					>
+					</el-date-picker>
 				</div>
 			</div>
 			<div class="middle">
@@ -124,7 +133,7 @@ const getEditors = async (): Promise<void> => {
 	];
 
 	filterData.value[0].options = options;
-	filterResult.value["editor_id"] = [options[1].value];
+	// filterResult.value["editor_id"] = [options[0].value];
 };
 
 // Project Name
@@ -151,7 +160,6 @@ const getCaseNames = async () => {
 
 // Device
 const device_infos: any = {};
-
 const getDevices = async () => {
 	const devices: any = await DeviceApi();
 	const options = [{ label: "None", value: "" }, ...devices.map(device => ({ label: device.name, value: device.device_id }))];
@@ -164,17 +172,15 @@ const getDevices = async () => {
 };
 
 // 日期
-let date_value = ref<string | null>(null);
+const date_value = ref<Array<Date>>([]);
 const initDate = () => {
-	const today = new Date();
-	const year = today.getFullYear();
-	const month = today.getMonth() + 1;
-	const day = today.getDate();
-	const formattedDate = `${year}-${month.toString().padStart(2, "0")}-${day.toString().padStart(2, "0")}`;
-	date_value.value = formattedDate;
-	handleDateChange(today);
+	const now = new Date(); // 获取当前日期
+	const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000); // 获取前一周日期
+	const startDate = [oneWeekAgo, now]; // 开始日期为前一周到今天
+	date_value.value = startDate; // 设置日期范围为开始日期到结束日期
+	handleDateChange(date_value.value);
 };
-const handleDateChange = value => {
+const handleDateChange = (value: Array<Date>) => {
 	if (value === null) {
 		if (filterResult.value.hasOwnProperty("date")) {
 			// 如果 filterResult 中拥有 date 属性，则删除该属性
@@ -183,13 +189,17 @@ const handleDateChange = value => {
 		emit("updateFilterResult", filterResult);
 		return;
 	}
-	const date = new Date(value);
-	const year = date.getFullYear();
-	const month = date.getMonth() + 1;
-	const day = date.getDate();
-	const formattedDate = `${year}-${month.toString().padStart(2, "0")}-${day.toString().padStart(2, "0")}`;
-
-	filterResult.value.date = [formattedDate];
+	const startDate = value[0];
+	const endDate = value[1];
+	const dateArr = [];
+	// 遍历开始日期到结束日期，将每个日期添加到数组中
+	for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+		const year = d.getFullYear();
+		const month = ("0" + (d.getMonth() + 1)).slice(-2);
+		const day = ("0" + d.getDate()).slice(-2);
+		dateArr.push(`${year}-${month}-${day}`);
+	}
+	filterResult.value.date = dateArr;
 	emit("updateFilterResult", filterResult);
 };
 
