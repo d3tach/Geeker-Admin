@@ -1,6 +1,6 @@
 <template>
 	<SelectFilter :data="filterData" @change="changeFilter" :defaultValues="filterResult" />
-	<div class="select-filter">
+	<div class="select-filter" style="margin-top: 0">
 		<div class="select-filter-item">
 			<div class="left">
 				<div class="select-filter-item-title">
@@ -16,13 +16,14 @@
 	</div>
 </template>
 
-<script setup lang="ts" name="PerformanceFilter">
+<script setup lang="ts" name="switchPerfDailyFilter">
 import { ref, defineEmits } from "vue";
 import SelectFilter from "@/components/SelectFilter/index.vue";
 import { EditorApi, ProjectNameApi, CaseNameApi, DeviceApi } from "@/api/modules/performance";
 import { PerformanceDataApi } from "@/api/modules/performance";
 import cloneDeep from "lodash/cloneDeep"; // 引入lodash库中的cloneDeep方法
 
+const emit = defineEmits(["updateDataResult", "updateFilterResult", "allDeviceInfo"]);
 const filterData = ref([
 	{
 		title: "editor版本",
@@ -93,7 +94,7 @@ const performanceDataType = ref([
 				value: "cpu_freq"
 			},
 			{
-				label: "GPU",
+				label: "GPU占用率",
 				value: "gpu"
 			}
 		]
@@ -149,11 +150,17 @@ const getCaseNames = async () => {
 };
 
 // Device
+const device_infos: any = {};
+
 const getDevices = async () => {
 	const devices: any = await DeviceApi();
 	const options = [{ label: "None", value: "" }, ...devices.map(device => ({ label: device.name, value: device.device_id }))];
 	filterData.value[3].options = options;
 	filterResult.value["device_id"] = ["ABJK022818007862"];
+	for (let i = 0; i < devices.length; i++) {
+		device_infos[devices[i].device_id] = devices[i];
+	}
+	emit("allDeviceInfo", device_infos);
 };
 
 // 日期
@@ -187,7 +194,6 @@ const handleDateChange = value => {
 };
 
 //数据请求
-const emit = defineEmits(["updateDataResult", "updateFilterResult"]);
 const dataResult: any = ref([]);
 const defaultType = { types: ["fps"] };
 const initDataType = () => {

@@ -1,20 +1,14 @@
 <template>
 	<el-form ref="loginFormRef" :model="loginForm" :rules="loginRules" size="large">
 		<el-form-item prop="username">
-			<el-input v-model="loginForm.username" placeholder="用户名：Mobile">
+			<el-input v-model="loginForm.username" placeholder="用户名：user">
 				<template #prefix>
 					<el-icon class="el-input__icon"><user /></el-icon>
 				</template>
 			</el-input>
 		</el-form-item>
 		<el-form-item prop="password">
-			<el-input
-				type="password"
-				v-model="loginForm.password"
-				placeholder="密码：Test1234"
-				show-password
-				autocomplete="new-password"
-			>
+			<el-input type="password" v-model="loginForm.password" placeholder="密码：123456" show-password autocomplete="new-password">
 				<template #prefix>
 					<el-icon class="el-input__icon"><lock /></el-icon>
 				</template>

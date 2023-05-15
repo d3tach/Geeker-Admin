@@ -18,9 +18,11 @@ export const CaseNameApi = () => {
 export const DeviceApi = () => {
 	return http.get<Performance.ResDevice>(`/get_all_devices`);
 };
-export const FPSApi = params => {
-	return http.post<Performance.ResData>(`/get_performance_data`, params);
+
+export const DeviceInfo = device_id => {
+	return http.get<Performance.ResDevice>(`/get_device_info`, { device_id: device_id });
 };
+
 export const PerformanceDataApi = params => {
 	return http.post<Performance.ResData>(`/get_performance_data`, params);
 };
