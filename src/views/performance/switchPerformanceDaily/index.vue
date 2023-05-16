@@ -56,7 +56,8 @@ const defaultOption = {
 			type: "inside",
 			start: 0,
 			orient: "vertical", // 纵向放缩
-			end: 100
+			end: 100,
+			bottom: 30
 		},
 		{
 			start: 0,
@@ -209,7 +210,6 @@ const deal_fps_data = data => {
 		const date_index = date_list.indexOf(item.date);
 		avg_fps_data[legendName][date_index] = avg_fps;
 	}
-	console.log(avg_fps_data);
 
 	for (let legendName in avg_fps_data) {
 		if (!chartOption.legend.data.includes(legendName)) {
@@ -229,7 +229,48 @@ const deal_fps_data = data => {
 };
 
 const deal_memory_data = data => {
-	console.log(data);
+	chartOption.yAxis.axisLabel = {
+		formatter: "{value}MB",
+		margin: 25
+	};
+	const avg_memory_data: any = {};
+	const memory_param = Object.keys(data[0].memory_data[0]);
+	for (let i = 0; i < data.length; i++) {
+		const item = data[i];
+		for (let j = 0; j < memory_param.length; j++) {
+			const memoryParam = memory_param[j];
+			const avg_memory = average(item.memory_data.map(memory => memory[memoryParam].Pss));
+			let legendName;
+			if (filterResult.value["device_id"] && filterResult.value["device_id"].length === 1) {
+				legendName = item.project_name + " " + item.case_name + " " + memory_param[j];
+			} else {
+				legendName = item.project_name + " " + item.case_name + " " + memory_param[j] + " " + device_infos[item.device_id].name;
+			}
+			if (!avg_memory_data[legendName]) {
+				avg_memory_data[legendName] = [];
+				for (let k = 0; k < date_list.length; k++) {
+					avg_memory_data[legendName].push(0); //[0,0,0,0]
+				}
+			}
+			const date_index = date_list.indexOf(item.date);
+			avg_memory_data[legendName][date_index] = avg_memory;
+		}
+	}
+	for (let legendName in avg_memory_data) {
+		if (!chartOption.legend.data.includes(legendName)) {
+			chartOption.legend.data.push(legendName);
+		}
+		// 添加线条数据
+		chartOption.series.push({
+			name: legendName,
+			type: "line",
+			label: {
+				show: true,
+				position: "top"
+			},
+			data: avg_memory_data[legendName]
+		});
+	}
 };
 
 const deal_cpu_freq = data => {
@@ -239,7 +280,7 @@ const deal_cpu_freq = data => {
 	}
 	const defaultGraphic = {
 		type: "group",
-		right: 100,
+		right: 20,
 		top: 100,
 		draggable: true,
 		children: [
@@ -275,13 +316,8 @@ const deal_cpu_freq = data => {
 
 	// cpu频率信息矩形框
 	for (let i = 0; i < devices_id.length; i++) {
-		// if (!(devices_id[i] in device_infos)) {
-		// 	const device_info: any = await DeviceInfo(devices_id[i]);
-		// 	device_infos[devices_id[i]] = device_info;
-		// }
-
 		const newGraphic = cloneDeep(defaultGraphic);
-		newGraphic.top = 130 * i;
+		newGraphic.top = 60 + 130 * i;
 		newGraphic.children[1].style.text = device_infos[devices_id[i]].name + "\n" + device_infos[devices_id[i]].cpu_info.cpu_brand;
 
 		//处理cpu集群名
@@ -315,37 +351,53 @@ const deal_cpu_freq = data => {
 			};
 			newGraphic.children.push(cpu_affected_list_info);
 		}
+		chartOption.yAxis.axisLabel = {
+			formatter: "{value}GHz",
+			margin: 25
+		};
 		chartOption.graphic.push(newGraphic);
 	}
 
 	// cpu频率图表
+	const avg_cpu_freq_data: any = {};
 	for (let i = 0; i < data.length; i++) {
 		const item = data[i];
-		for (let j = 0; j < 3; j++) {
+		const date_index = date_list.indexOf(item.date);
+		for (let j = 0; j < device_infos[item.device_id].cpu_info.cpu_affected_lists.length; j++) {
+			const avg_cpu_freq = average(item.cpu_data.cpu_freq.map(cpu_freq => cpu_freq[j]));
 			let legendName;
 			if (filterResult.value["device_id"] && filterResult.value["device_id"].length === 1) {
 				legendName = item.project_name + " " + item.case_name + " Cluster" + j + " ";
 			} else {
 				legendName = item.project_name + " " + item.case_name + " Cluster" + j + " " + device_infos[item.device_id].name;
 			}
-			// 添加图例
-			chartOption.legend.data.push(legendName);
-			// 添加线条数据
-			chartOption.series.push({
-				name: legendName,
-				type: "line",
-				label: {
-					show: true,
-					position: "top"
-				},
-				data: item.cpu_data.cpu_freq.map(freq => freq[j])
-			});
+
+			if (!avg_cpu_freq_data[legendName]) {
+				avg_cpu_freq_data[legendName] = [];
+				for (let k = 0; k < date_list.length; k++) {
+					avg_cpu_freq_data[legendName].push(0);
+				}
+			}
+			avg_cpu_freq_data[legendName][date_index] = avg_cpu_freq;
 		}
 	}
-	chartOption.yAxis.axisLabel = {
-		formatter: "{value}GHz",
-		margin: 25
-	};
+
+	for (let legendName in avg_cpu_freq_data) {
+		if (!chartOption.legend.data.includes(legendName)) {
+			chartOption.legend.data.push(legendName);
+		}
+		// 添加线条数据
+		chartOption.series.push({
+			name: legendName,
+			type: "line",
+			label: {
+				show: true,
+				position: "top"
+			},
+			data: avg_cpu_freq_data[legendName]
+		});
+	}
+
 	myChart.setOption(chartOption);
 };
 
@@ -416,7 +468,6 @@ const deal_gpu_use = data => {
 		const date_index = date_list.indexOf(item.date);
 		avg_gpu_data[legendName][date_index] = avg_gpu;
 	}
-	console.log(avg_gpu_data);
 
 	for (let legendName in avg_gpu_data) {
 		if (!chartOption.legend.data.includes(legendName)) {

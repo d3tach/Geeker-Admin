@@ -279,7 +279,7 @@ const deal_cpu_freq = async data => {
 	}
 	const defaultGraphic = {
 		type: "group",
-		right: 100,
+		right: 20,
 		top: 100,
 		draggable: true,
 		children: [
@@ -321,7 +321,7 @@ const deal_cpu_freq = async data => {
 		}
 
 		const newGraphic = cloneDeep(defaultGraphic);
-		newGraphic.top = 130 * i;
+		newGraphic.top = 60 + 130 * i;
 		newGraphic.children[1].style.text = device_infos[devices_id[i]].name + "\n" + device_infos[devices_id[i]].cpu_info.cpu_brand;
 
 		//处理cpu集群名
@@ -361,7 +361,7 @@ const deal_cpu_freq = async data => {
 	// cpu频率图表
 	for (let i = 0; i < data.length; i++) {
 		const item = data[i];
-		for (let j = 0; j < 3; j++) {
+		for (let j = 0; j < device_infos[item.device_id].cpu_info.cpu_affected_lists.length; j++) {
 			let legendName;
 			if (filterResult.value["device_id"] && filterResult.value["device_id"].length === 1) {
 				legendName = item.project_name + " " + item.case_name + " Cluster" + j + " ";
