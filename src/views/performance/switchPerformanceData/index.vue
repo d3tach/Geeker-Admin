@@ -49,31 +49,17 @@ const defaultOption = {
 	toolbox: {
 		feature: {
 			saveAsImage: {},
-			dataZoom: {} // 添加dataZoom组件
+			dataZoom: { show: false } // 添加dataZoom组件
 		}
 	},
 	dataZoom: [
 		{
 			// 开启数据区域缩放，支持选择区域和滚轮缩放两种方式
 			type: "inside",
-			start: 0,
-			orient: "vertical", // 纵向放缩
-			end: 100
-		},
-		{
-			start: 0,
-			end: 100,
-			height: 20,
-			handleIcon:
-				"path://M17.3,7.9l-4.4-4.4c-0.4-0.4-1-0.4-1.4,0L6.4,9.7c-0.4,0.4-0.4,1,0,1.4l5.5,5.5c0.4,0.4,1,0.4,1.4,0l5.5-5.5c0.4-0.4,0.4-1,0-1.4L17.3,7.9z",
-			handleSize: "50%", // 缩放手柄大小
-			handleStyle: {
-				color: "#fff",
-				shadowBlur: 3,
-				shadowColor: "rgba(0, 0, 0, 0.6)",
-				shadowOffsetX: 2,
-				shadowOffsetY: 2
-			}
+			start: 0, // 开始位置
+			end: 100, // 结束位置
+			zoomOnMouseWheel: true, // 开启鼠标滚轮缩放
+			moveOnMouseMove: true // 开启鼠标移动缩放
 		}
 	],
 	xAxis: {
@@ -109,7 +95,7 @@ const defaultOption = {
 	grid: {
 		left: "2%",
 		right: "4%",
-		bottom: "3%",
+		bottom: "4%",
 		top: "12%", // 设置顶部留白空间
 		containLabel: true
 	},

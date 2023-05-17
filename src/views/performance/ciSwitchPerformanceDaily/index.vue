@@ -1,21 +1,82 @@
 <template>
 	<div class="card content-box">
 		<!-- <span class="text">性能开关数据</span> -->
-		<switchPerfDailyFilter
+		<ciSwitchPerfDailyFilter
 			@update-filter-result="handleFilterChanged"
 			@update-data-result="handleDataChanged"
 			@all-device-info="handleGetDeviceInfo"
-		></switchPerfDailyFilter>
+		></ciSwitchPerfDailyFilter>
+		<div v-show="memory_select">
+			<SelectFilter :data="memoryFilter" @change="changeMemoryFilter" :default-values="{ memory: ['Total'] }" />
+		</div>
+
 		<div ref="echartsRef" style="width: 100%; height: 900%"></div>
 	</div>
 </template>
 
-<script setup lang="ts" name="switchPerformanceDaily">
+<script setup lang="ts" name="ciSwitchPerformanceDaily">
 import { ref, onMounted } from "vue";
 import * as echarts from "echarts";
 import { useEcharts } from "@/hooks/useEcharts";
 import cloneDeep from "lodash/cloneDeep"; // 引入lodash库中的cloneDeep方法
-import switchPerfDailyFilter from "@/components/PerformanceFilter/switchPerfDaily.vue";
+import ciSwitchPerfDailyFilter from "@/components/PerformanceFilter/ciSwitchPerfDaily.vue";
+import SelectFilter from "@/components/SelectFilter/index.vue";
+// 内存处理
+const memoryFilter = ref([
+	{
+		title: "内存项",
+		key: "memory",
+		multiple: true,
+		options: [
+			{
+				label: "None",
+				value: ""
+			},
+			{
+				label: "Java Heap",
+				value: "Java Heap"
+			},
+			{
+				label: "Native Heap",
+				value: "Native Heap"
+			},
+			{
+				label: "Code",
+				value: "Code"
+			},
+			{
+				label: "Stack",
+				value: "Stack"
+			},
+			{
+				label: "Graphics",
+				value: "Graphics"
+			},
+			{
+				label: "Private Other",
+				value: "Private Other"
+			},
+			{
+				label: "System",
+				value: "System"
+			},
+			{
+				label: "Unknown",
+				value: "Unknown"
+			},
+			{
+				label: "Total",
+				value: "Total"
+			}
+		]
+	}
+]);
+const memorySelectedParam = ref(["Total"]);
+const changeMemoryFilter = val => {
+	memorySelectedParam.value = val.memory;
+	// deal_memory_data(dataResult.value);
+};
+const memory_select = ref(false); //显示内存筛选项
 
 //数据显示
 const echartsRef = ref<HTMLElement>();
@@ -116,9 +177,13 @@ const handleGetDeviceInfo = device_info => {
 const handleFilterChanged = filter => {
 	filterResult.value = filter.value;
 	console.log("接受到filter", filterResult.value);
+	if (filterResult.value.types) {
+		memory_select.value = filterResult.value.types.includes("memory") ? true : false;
+	}
 };
 const handleDataChanged = async data => {
 	dataResult.value = data.value;
+	console.log("接受到data", data.value);
 	date_list = []; //日期数据列表
 	data.value.forEach(item => {
 		if (!date_list.includes(item.date)) {
@@ -127,17 +192,6 @@ const handleDataChanged = async data => {
 	});
 	//画图表
 	draw_chart(dataResult.value);
-	console.log("接受到data", data.value);
-};
-
-//返回数组均值
-const average = (arr: number[]) => {
-	if (arr.length === 0) {
-		return 0;
-	}
-	const sum = arr.reduce((acc, val) => acc + val);
-	const avg = sum / arr.length;
-	return Number(avg.toFixed(2)); // 保留两位小数
 };
 
 const draw_chart = data => {
@@ -178,12 +232,13 @@ const deal_fps_data = data => {
 	const avg_fps_data: any = {};
 	for (let i = 0; i < data.length; i++) {
 		const item = data[i];
-		const avg_fps = average(item.fps_data);
+		const avg_fps = item.fps;
 		let legendName;
-		if (filterResult.value["device_id"] && filterResult.value["device_id"].length === 1) {
-			legendName = item.project_name + " " + item.case_name;
+
+		if (filterResult.value["ip"] && filterResult.value["ip"].length === 1) {
+			legendName = item.project + " " + item.case;
 		} else {
-			legendName = item.project_name + " " + item.case_name + " " + device_infos[item.device_id].name;
+			legendName = item.project + " " + item.case + " " + device_infos[i];
 		}
 
 		if (!avg_fps_data[legendName]) {
@@ -218,18 +273,26 @@ const deal_memory_data = data => {
 		formatter: "{value}MB",
 		margin: 25
 	};
+	chartOption.legend["selected"] = {};
 	const avg_memory_data: any = {};
-	const memory_param = Object.keys(data[0].memory_data[0]);
+
+	console.log(memorySelectedParam.value);
+	let memory_param = memorySelectedParam.value;
+	if (!memory_param) {
+		memory_param = Object.keys(data[0].memory);
+	}
+	console.log(memory_param);
+
 	for (let i = 0; i < data.length; i++) {
 		const item = data[i];
 		for (let j = 0; j < memory_param.length; j++) {
 			const memoryParam = memory_param[j];
-			const avg_memory = average(item.memory_data.map(memory => memory[memoryParam].Pss));
+			const avg_memory = item.memory[memoryParam];
 			let legendName;
-			if (filterResult.value["device_id"] && filterResult.value["device_id"].length === 1) {
-				legendName = item.project_name + " " + item.case_name + " " + memory_param[j];
+			if (filterResult.value["ip"] && filterResult.value["ip"].length === 1) {
+				legendName = item.project + " " + item.case + " " + memory_param[j];
 			} else {
-				legendName = item.project_name + " " + item.case_name + " " + memory_param[j] + " " + device_infos[item.device_id].name;
+				legendName = item.project + " " + item.case + " " + memory_param[j] + " " + device_infos[i];
 			}
 			if (!avg_memory_data[legendName]) {
 				avg_memory_data[legendName] = [];
@@ -244,6 +307,9 @@ const deal_memory_data = data => {
 	for (let legendName in avg_memory_data) {
 		if (!chartOption.legend.data.includes(legendName)) {
 			chartOption.legend.data.push(legendName);
+			// if (!legendName.includes("Total")) {
+			// 	chartOption.legend["selected"][legendName] = false;
+			// }
 		}
 		// 添加线条数据
 		chartOption.series.push({
@@ -259,102 +325,23 @@ const deal_memory_data = data => {
 };
 
 const deal_cpu_freq = data => {
-	let devices_id = filterResult.value.device_id;
-	if (!devices_id) {
-		devices_id = Object.keys(device_infos);
-	}
-	const defaultGraphic = {
-		type: "group",
-		right: 20,
-		top: 100,
-		draggable: true,
-		children: [
-			{
-				type: "rect",
-				z: 100,
-				shape: {
-					width: 300,
-					height: 100,
-					r: 10 //圆角
-				},
-				style: {
-					fill: "rgba(234, 238, 241,1)", // 矩形填充颜色
-					shadowBlur: 1, // 阴影模糊程度
-					shadowOffsetX: 1, // 阴影偏移量 X
-					shadowOffsetY: 1 // 阴影偏移量 Y
-				}
-			},
-			{
-				type: "text", // 文字
-				z: 101,
-				position: [150, 10], // 将文本放置在矩形中央（位置自行调整）
-				style: {
-					fill: "#e46c11",
-					fontWeight: "bold",
-					text: "cpu",
-					font: "14px Microsoft YaHei",
-					textAlign: "center" // 水平居中对齐
-				}
-			}
-		]
+	chartOption.yAxis.axisLabel = {
+		formatter: "{value}GHz",
+		margin: 25
 	};
-
-	// cpu频率信息矩形框
-	for (let i = 0; i < devices_id.length; i++) {
-		const newGraphic = cloneDeep(defaultGraphic);
-		newGraphic.top = 60 + 130 * i;
-		newGraphic.children[1].style.text = device_infos[devices_id[i]].name + "\n" + device_infos[devices_id[i]].cpu_info.cpu_brand;
-
-		//处理cpu集群名
-		for (let j = 0; j < device_infos[devices_id[i]].cpu_info.cpu_affected_lists.length; j++) {
-			const cpu_affected_list = device_infos[devices_id[i]].cpu_info.cpu_affected_lists[j];
-			const nums = cpu_affected_list.split(" ");
-			let cpu_affected_list_name: any;
-			if (nums.length > 1) {
-				const cpu_affected_list_first = `cpu${nums[0]}`;
-				const cpu_affected_list_last = `cpu${nums.length > 1 ? nums[nums.length - 1] : nums[0]}`;
-				cpu_affected_list_name = `${cpu_affected_list_first}~${cpu_affected_list_last}`;
-			} else {
-				cpu_affected_list_name = `cpu${nums[0]}`;
-			}
-			const cpu_freq_limit_list = device_infos[devices_id[i]].cpu_info.cpu_freq_limit_lists[j];
-			const cpu_min_freq = cpu_freq_limit_list[0];
-			const cpu_max_freq = cpu_freq_limit_list[1];
-
-			//添加cpu集群信息至信息卡
-			const cpu_affected_list_info: any = {
-				type: "text", // 文字
-				z: 101,
-				left: 10,
-				top: 40 + j * 20,
-				style: {
-					fill: "#393a3b",
-					fontWeight: "bold",
-					text: "【Cluster" + j + "】" + cpu_affected_list_name + "：" + cpu_min_freq + "~" + cpu_max_freq + " GHz",
-					font: "14px Microsoft YaHei"
-				}
-			};
-			newGraphic.children.push(cpu_affected_list_info);
-		}
-		chartOption.yAxis.axisLabel = {
-			formatter: "{value}GHz",
-			margin: 25
-		};
-		chartOption.graphic.push(newGraphic);
-	}
 
 	// cpu频率图表
 	const avg_cpu_freq_data: any = {};
 	for (let i = 0; i < data.length; i++) {
 		const item = data[i];
 		const date_index = date_list.indexOf(item.date);
-		for (let j = 0; j < device_infos[item.device_id].cpu_info.cpu_affected_lists.length; j++) {
-			const avg_cpu_freq = average(item.cpu_data.cpu_freq.map(cpu_freq => cpu_freq[j]));
+		for (let j = 0; j < 3; j++) {
+			const avg_cpu_freq = item.cpu_freq["cpu_freq" + j];
 			let legendName;
-			if (filterResult.value["device_id"] && filterResult.value["device_id"].length === 1) {
-				legendName = item.project_name + " " + item.case_name + " Cluster" + j + " ";
+			if (filterResult.value["ip"] && filterResult.value["ip"].length === 1) {
+				legendName = item.project + " " + item.case + " Cluster" + j + " ";
 			} else {
-				legendName = item.project_name + " " + item.case_name + " Cluster" + j + " " + device_infos[item.device_id].name;
+				legendName = item.project + " " + item.case + " Cluster" + j + " " + device_infos[item.device_id].name;
 			}
 
 			if (!avg_cpu_freq_data[legendName]) {
@@ -394,12 +381,12 @@ const deal_cpu_use = data => {
 	const avg_cpu_data: any = {};
 	for (let i = 0; i < data.length; i++) {
 		const item = data[i];
-		const avg_cpu = average(item.cpu_data.cpu_utilization);
+		const avg_cpu = item.cpu_utilization;
 		let legendName;
-		if (filterResult.value["device_id"] && filterResult.value["device_id"].length === 1) {
-			legendName = item.project_name + " " + item.case_name;
+		if (filterResult.value["ip"] && filterResult.value["ip"].length === 1) {
+			legendName = item.project + " " + item.case;
 		} else {
-			legendName = item.project_name + " " + item.case_name + " " + device_infos[item.device_id].name;
+			legendName = item.project + " " + item.case + " " + device_infos[i];
 		}
 
 		if (!avg_cpu_data[legendName]) {
@@ -436,12 +423,12 @@ const deal_gpu_use = data => {
 	const avg_gpu_data: any = {};
 	for (let i = 0; i < data.length; i++) {
 		const item = data[i];
-		const avg_gpu = average(item.gpu_data.gpu_use_percent);
+		const avg_gpu = item.gpu;
 		let legendName;
-		if (filterResult.value["device_id"] && filterResult.value["device_id"].length === 1) {
-			legendName = item.project_name + " " + item.case_name;
+		if (filterResult.value["ip"] && filterResult.value["ip"].length === 1) {
+			legendName = item.project + " " + item.case;
 		} else {
-			legendName = item.project_name + " " + item.case_name + " " + device_infos[item.device_id].name;
+			legendName = item.project + " " + item.case + " " + device_infos[i];
 		}
 
 		if (!avg_gpu_data[legendName]) {
