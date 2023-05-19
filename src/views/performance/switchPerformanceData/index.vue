@@ -2,6 +2,7 @@
 	<div class="card content-box">
 		<!-- <span class="text">性能开关数据</span> -->
 		<switchPerfDataFilter
+			ref="switchPerfDataFilterRef"
 			@update-filter-result="handleFilterChanged"
 			@update-data-result="handleDataChanged"
 			@all-device-info="handleGetDeviceInfo"
@@ -109,6 +110,7 @@ onMounted(() => {
 });
 
 // 数据更新
+const switchPerfDataFilterRef = ref();
 const filterResult = ref();
 const dataResult = ref();
 let device_infos = {}; //设备信息存个变量,避免多次重复请求数据
@@ -119,6 +121,9 @@ const handleGetDeviceInfo = device_info => {
 const handleFilterChanged = filter => {
 	filterResult.value = filter.value;
 	console.log("接受到filter", filterResult.value);
+	if (switchPerfDataFilterRef.value) {
+		switchPerfDataFilterRef.value.getTypeData();
+	}
 };
 const handleDataChanged = async data => {
 	dataResult.value = data.value;

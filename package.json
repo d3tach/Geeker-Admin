@@ -1,9 +1,9 @@
 {
-	"name": "geeker-admin",
+	"name": "Performance",
 	"private": true,
 	"version": "0.0.7",
-	"description": "Geeker-Admin 后台管理系统",
-	"author": "SpicyBoy <848130454@qq.com>",
+	"description": "Performance数据展示",
+	"author": "",
 	"license": "MIT",
 	"scripts": {
 		"dev": "vite",

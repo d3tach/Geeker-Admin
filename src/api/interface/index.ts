@@ -114,7 +114,7 @@ export namespace Performance {
 		device_id: string;
 		name: string;
 	}
-	export interface ResFPS {
+	export interface ResData {
 		[key: string]: string[];
 	}
 	export interface ResMemory {

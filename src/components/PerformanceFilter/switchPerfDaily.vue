@@ -26,7 +26,7 @@
 </template>
 
 <script setup lang="ts" name="switchPerfDailyFilter">
-import { ref, defineEmits } from "vue";
+import { ref, defineEmits, defineExpose } from "vue";
 import SelectFilter from "@/components/SelectFilter/index.vue";
 import { EditorDailyApi, ProjectNameApi, CaseNameApi, DeviceApi } from "@/api/modules/performance";
 import { PerformanceDataApi } from "@/api/modules/performance";
@@ -228,9 +228,12 @@ const getTypeData = async () => {
 		dataResult.value = [];
 	} finally {
 		emit("updateDataResult", dataResult);
+		return dataResult.value;
 	}
 };
-
+defineExpose({
+	getTypeData
+});
 getEditors();
 getProjectNames();
 getCaseNames();

@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts" name="switchPerfDataFilter">
-import { ref, defineEmits } from "vue";
+import { ref, defineEmits, defineExpose } from "vue";
 import SelectFilter from "@/components/SelectFilter/index.vue";
 import { EditorApi, ProjectNameApi, CaseNameApi, DeviceApi } from "@/api/modules/performance";
 import { PerformanceDataApi } from "@/api/modules/performance";
@@ -215,7 +215,9 @@ const getTypeData = async () => {
 		emit("updateDataResult", dataResult);
 	}
 };
-
+defineExpose({
+	getTypeData
+});
 getEditors();
 getProjectNames();
 getCaseNames();
