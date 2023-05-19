@@ -31,7 +31,7 @@ const filterData = ref([
 		multiple: true,
 		options: [
 			{
-				label: "None",
+				label: "All",
 				value: ""
 			}
 		]
@@ -42,7 +42,7 @@ const filterData = ref([
 		multiple: true,
 		options: [
 			{
-				label: "None",
+				label: "All",
 				value: ""
 			}
 		]
@@ -53,7 +53,7 @@ const filterData = ref([
 		multiple: true,
 		options: [
 			{
-				label: "None",
+				label: "All",
 				value: ""
 			}
 		]
@@ -64,7 +64,7 @@ const filterData = ref([
 		multiple: true,
 		options: [
 			{
-				label: "None",
+				label: "All",
 				value: ""
 			}
 		]
@@ -86,7 +86,7 @@ const performanceDataType = ref([
 				value: "memory"
 			},
 			{
-				label: "CPU使用率",
+				label: "CPU利用率",
 				value: "cpu_use"
 			},
 			{
@@ -94,7 +94,7 @@ const performanceDataType = ref([
 				value: "cpu_freq"
 			},
 			{
-				label: "GPU占用率",
+				label: "GPU使用率",
 				value: "gpu"
 			}
 		]
@@ -109,7 +109,7 @@ const changeFilter = val => {
 	filterResult.value = {};
 	// 如果新数据中不存在某个属性，则从原始数据中获取该属性并添加到新数据中
 	for (const [key, value] of Object.entries(newFilterResult)) {
-		if (value && value[0]) {
+		if (value) {
 			filterResult.value[key] = value;
 		}
 	}
@@ -119,7 +119,7 @@ const changeFilter = val => {
 const getEditors = async (): Promise<void> => {
 	const editors: any = await EditorApi();
 	const options = [
-		{ label: "None", value: "" },
+		{ label: "All", value: "" },
 		...editors.map(editor => ({ label: editor.editor_version, value: editor.editor_id }))
 	];
 
@@ -130,7 +130,7 @@ const getEditors = async (): Promise<void> => {
 // Project Name
 const getProjectNames = async () => {
 	const projectNames: any = await ProjectNameApi();
-	const options = [{ label: "None", value: "" }];
+	const options = [{ label: "All", value: "" }];
 	for (let i = 0; i < projectNames.length; i++) {
 		options.push({ label: projectNames[i], value: projectNames[i] });
 	}
@@ -141,7 +141,7 @@ const getProjectNames = async () => {
 // Case Name
 const getCaseNames = async () => {
 	const caseNames: any = await CaseNameApi();
-	const options = [{ label: "None", value: "" }];
+	const options = [{ label: "All", value: "" }];
 	for (let i = 0; i < caseNames.length; i++) {
 		options.push({ label: caseNames[i], value: caseNames[i] });
 	}
@@ -154,7 +154,7 @@ const device_infos: any = {};
 
 const getDevices = async () => {
 	const devices: any = await DeviceApi();
-	const options = [{ label: "None", value: "" }, ...devices.map(device => ({ label: device.name, value: device.device_id }))];
+	const options = [{ label: "All", value: "" }, ...devices.map(device => ({ label: device.name, value: device.device_id }))];
 	filterData.value[3].options = options;
 	filterResult.value["device_id"] = ["ABJK022818007862"];
 	for (let i = 0; i < devices.length; i++) {

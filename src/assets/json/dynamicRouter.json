@@ -910,6 +910,36 @@
 			]
 		},
 		{
+			"path": "/CI_Performance",
+			"name": "CI_Performance",
+			"redirect": "/performance/ciSwitchPerformanceDaily",
+			"meta": {
+				"icon": "DataAnalysis",
+				"title": "CI数据",
+				"isLink": "",
+				"isHide": false,
+				"isFull": false,
+				"isAffix": false,
+				"isKeepAlive": true
+			},
+			"children": [
+				{
+					"path": "/performance/ciSwitchPerformanceDaily",
+					"name": "ciSwitchPerformanceDaily",
+					"component": "/performance/ciSwitchPerformanceDaily/index",
+					"meta": {
+						"icon": "TrendCharts",
+						"title": "ci-性能开关case",
+						"isLink": "",
+						"isHide": false,
+						"isFull": false,
+						"isAffix": false,
+						"isKeepAlive": true
+					}
+				}
+			]
+		},
+		{
 			"path": "/performance",
 			"name": "performance",
 			"redirect": "/performance/memory",
@@ -928,7 +958,7 @@
 					"name": "switchPerformanceDaily",
 					"component": "/performance/switchPerformanceDaily/index",
 					"meta": {
-						"icon": "Menu",
+						"icon": "TrendCharts",
 						"title": "性能开关-日常均值",
 						"isLink": "",
 						"isHide": false,
@@ -942,7 +972,7 @@
 					"name": "switchPerformanceData",
 					"component": "/performance/switchPerformanceData/index",
 					"meta": {
-						"icon": "Menu",
+						"icon": "SwitchFilled",
 						"title": "性能开关数据",
 						"isLink": "",
 						"isHide": false,

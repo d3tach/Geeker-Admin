@@ -69,7 +69,7 @@ const defaultOption = {
 		axisLabel: {
 			formatter: "{value}s"
 		},
-		boundaryGap: false,
+		boundaryGap: true,
 		axisLine: {
 			symbol: ["none", "arrow"], // 在 X 轴的末尾添加箭头
 			lineStyle: {

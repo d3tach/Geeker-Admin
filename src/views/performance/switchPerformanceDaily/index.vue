@@ -64,7 +64,7 @@ const defaultOption = {
 		type: "category",
 		name: "日期",
 		nameLocation: "end",
-		boundaryGap: false,
+		boundaryGap: true,
 		axisLine: {
 			symbol: ["none", "arrow"], // 在 X 轴的末尾添加箭头
 			lineStyle: {
@@ -72,6 +72,7 @@ const defaultOption = {
 				width: 2
 			}
 		},
+		interval: 0,
 		data: []
 	},
 	yAxis: {
@@ -189,7 +190,7 @@ const deal_fps_data = data => {
 		if (!avg_fps_data[legendName]) {
 			avg_fps_data[legendName] = [];
 			for (let j = 0; j < date_list.length; j++) {
-				avg_fps_data[legendName].push(0); //[0,0,0,0]
+				avg_fps_data[legendName].push(undefined); //[0,0,0,0]
 			}
 		}
 		const date_index = date_list.indexOf(item.date);
@@ -208,9 +209,11 @@ const deal_fps_data = data => {
 				show: true,
 				position: "top"
 			},
+			connectNulls: true,
 			data: avg_fps_data[legendName]
 		});
 	}
+	console.log(chartOption);
 };
 
 const deal_memory_data = data => {
@@ -234,7 +237,7 @@ const deal_memory_data = data => {
 			if (!avg_memory_data[legendName]) {
 				avg_memory_data[legendName] = [];
 				for (let k = 0; k < date_list.length; k++) {
-					avg_memory_data[legendName].push(0); //[0,0,0,0]
+					avg_memory_data[legendName].push(undefined); //[0,0,0,0]
 				}
 			}
 			const date_index = date_list.indexOf(item.date);
@@ -253,6 +256,7 @@ const deal_memory_data = data => {
 				show: true,
 				position: "top"
 			},
+			connectNulls: true,
 			data: avg_memory_data[legendName]
 		});
 	}
@@ -360,7 +364,7 @@ const deal_cpu_freq = data => {
 			if (!avg_cpu_freq_data[legendName]) {
 				avg_cpu_freq_data[legendName] = [];
 				for (let k = 0; k < date_list.length; k++) {
-					avg_cpu_freq_data[legendName].push(0);
+					avg_cpu_freq_data[legendName].push(undefined);
 				}
 			}
 			avg_cpu_freq_data[legendName][date_index] = avg_cpu_freq;
@@ -379,6 +383,7 @@ const deal_cpu_freq = data => {
 				show: true,
 				position: "top"
 			},
+			connectNulls: true,
 			data: avg_cpu_freq_data[legendName]
 		});
 	}
@@ -405,7 +410,7 @@ const deal_cpu_use = data => {
 		if (!avg_cpu_data[legendName]) {
 			avg_cpu_data[legendName] = [];
 			for (let j = 0; j < date_list.length; j++) {
-				avg_cpu_data[legendName].push(0); //[0,0,0,0]
+				avg_cpu_data[legendName].push(undefined); //[0,0,0,0]
 			}
 		}
 		const date_index = date_list.indexOf(item.date);
@@ -423,6 +428,7 @@ const deal_cpu_use = data => {
 				show: true,
 				position: "top"
 			},
+			connectNulls: true,
 			data: avg_cpu_data[legendName]
 		});
 	}
@@ -447,7 +453,7 @@ const deal_gpu_use = data => {
 		if (!avg_gpu_data[legendName]) {
 			avg_gpu_data[legendName] = [];
 			for (let j = 0; j < date_list.length; j++) {
-				avg_gpu_data[legendName].push(0); //[0,0,0,0]
+				avg_gpu_data[legendName].push(undefined); //[0,0,0,0]
 			}
 		}
 		const date_index = date_list.indexOf(item.date);
@@ -466,6 +472,7 @@ const deal_gpu_use = data => {
 				show: true,
 				position: "top"
 			},
+			connectNulls: true,
 			data: avg_gpu_data[legendName]
 		});
 	}
