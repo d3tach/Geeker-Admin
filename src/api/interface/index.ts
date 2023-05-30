@@ -38,6 +38,7 @@ export namespace Login {
   }
   export interface ResLogin {
     access_token: string;
+    userInfo: any;
   }
   export interface ResAuthButtons {
     [key: string]: string[];
@@ -86,5 +87,27 @@ export namespace User {
     id: string;
     name: string;
     children?: ResDepartment[];
+  }
+}
+
+// * 性能数据模块
+export namespace Performance {
+  export interface ResEditor {
+    editor_id: string;
+    editor_version: string;
+  }
+  export interface ResProjectName {
+    project_name: string;
+  }
+  export interface ResCaseName {
+    case_name: string;
+  }
+
+  export interface ResDevice {
+    device_id: string;
+    name: string;
+  }
+  export interface ResData {
+    [key: string]: string[];
   }
 }

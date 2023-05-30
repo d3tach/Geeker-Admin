@@ -81,23 +81,71 @@ const emit = defineEmits<FilterEmits>();
 const select = (item: SelectDataProps, option: OptionsProps) => {
   if (!item.multiple) {
     // * 单选
-    if (selected.value[item.key] !== option.value) selected.value[item.key] = option.value;
+    if (selected.value[item.key] !== option.value) selected.value[item.key] = [option.value];
   } else {
     // * 多选
-    // 如果选中的是第一个值，则直接设置
-    if (item.options[0].value === option.value) selected.value[item.key] = [option.value];
-    // 如果选择的值已经选中了，则删除选中的值
-    if (selected.value[item.key].includes(option.value)) {
-      let currentIndex = selected.value[item.key].findIndex((s: any) => s === option.value);
-      selected.value[item.key].splice(currentIndex, 1);
-      // 当全部删光时，把第第一个值选中
-      if (selected.value[item.key].length == 0) selected.value[item.key] = [item.options[0].value];
-    } else {
-      // 未选中点击值的时候，追加选中值
-      selected.value[item.key].push(option.value);
-      // 单选中全部并且点击到了未选中的值，把第一个值删除掉
-      if (selected.value[item.key].includes(item.options[0].value)) selected.value[item.key].splice(0, 1);
+    if (item.options.length === 1) {
+      //只有一个,怎么点都全选
+      for (let i = 0; i < item.options.length; i++) {
+        const item_option_value = item.options[i].value;
+        if (!selected.value[item.key].includes(item_option_value)) {
+          selected.value[item.key].push(item_option_value);
+        }
+      }
+      return;
     }
+    // 如果选中的是第一个值，则全选
+    if (item.options[0].value === option.value) {
+      //如果第一个项之前已被选中,取消选中，改为选中第二项
+      if (selected.value[item.key].includes(option.value)) {
+        selected.value[item.key] = [item.options[1].value];
+      }
+      // 第一个项之前没有被选中,选中所有
+      else {
+        for (let i = 0; i < item.options.length; i++) {
+          const item_option_value = item.options[i].value;
+          if (!selected.value[item.key].includes(item_option_value)) {
+            selected.value[item.key].push(item_option_value);
+          }
+        }
+      }
+    } else {
+      // 如果选择的值已经选中了，
+      if (selected.value[item.key].includes(option.value)) {
+        // 如果当前是全选中状态,删除选中值和第一个all值
+        if (selected.value[item.key].length === item.options.length) {
+          let currentIndex = selected.value[item.key].findIndex((s: any) => s === option.value);
+          selected.value[item.key].splice(currentIndex, 1);
+          let emptyIndex = selected.value[item.key].findIndex((s: any) => s === "");
+          selected.value[item.key].splice(emptyIndex, 1);
+        } else {
+          //原选中个数大于1,删除选中
+          if (selected.value[item.key].length > 1) {
+            let currentIndex = selected.value[item.key].findIndex((s: any) => s === option.value);
+            selected.value[item.key].splice(currentIndex, 1);
+          }
+        }
+      } else {
+        // 未选中点击值的时候，追加选中值
+        selected.value[item.key].push(option.value);
+        // 全部选中,且没有选中第一个值,把第一个All值也加上
+        if (selected.value[item.key].length === item.options.length - 1) selected.value[item.key].push(item.options[0].value);
+      }
+    }
+    // // 如果选中的是第一个值，则直接设置
+    // if (item.options[0].value === option.value) selected.value[item.key] = [option.value];
+    // // 如果选择的值已经选中了，则删除选中的值
+    // if (selected.value[item.key].includes(option.value)) {
+    // 	let currentIndex = selected.value[item.key].findIndex((s: any) => s === option.value);
+    // 	selected.value[item.key].splice(currentIndex, 1);
+    // 	// 当全部删光时，把第第一个值选中
+    // 	if (selected.value[item.key].length == 0) selected.value[item.key] = [item.options[0].value];
+    // } else {
+    // 	// 未选中点击值的时候，追加选中值
+    // 	selected.value[item.key].push(option.value);
+    // 	// 单选中全部并且点击到了未选中的值，把第一个值删除掉
+    // 	if (selected.value[item.key].includes(item.options[0].value)) selected.value[item.key].splice(0, 1);
+    // }
   }
   emit("change", selected.value);
 };

@@ -1,0 +1,30 @@
+.select-filter {
+  width: 100%;
+  margin-top: 10px;
+  .select-filter-item {
+    display: flex;
+    align-items: center; /* 垂直居中 */
+    justify-content: space-between;
+    border-top: 1px dashed var(--el-border-color-light);
+    .select-filter-item-title {
+      margin-right: 10px;
+      span {
+        font-size: 14px;
+        color: var(--el-text-color-regular);
+        white-space: nowrap;
+      }
+    }
+    .left,
+    .middle,
+    .right {
+      display: flex;
+      flex-basis: 0;
+      flex-grow: 1;
+    }
+    .right {
+      justify-content: flex-end; /* 靠右对齐 */
+      margin-right: 20px; /* 添加间距 */
+      text-align: right; /* 内容靠右 */
+    }
+  }
+}

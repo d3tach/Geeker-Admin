@@ -234,37 +234,6 @@
           }
         },
         {
-          "path": "/assembly/tabs",
-          "name": "tabs",
-          "component": "/assembly/tabs/index",
-          "meta": {
-            "icon": "Menu",
-            "title": "标签页操作",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "children": [
-            {
-              "path": "/assembly/tabs/detail/:id",
-              "name": "tabsDetail",
-              "component": "/assembly/tabs/detail",
-              "meta": {
-                "icon": "Menu",
-                "title": "Tab 详情",
-                "activeMenu": "/assembly/tabs",
-                "isLink": "",
-                "isHide": true,
-                "isFull": false,
-                "isAffix": false,
-                "isKeepAlive": true
-              }
-            }
-          ]
-        },
-        {
           "path": "/assembly/selectIcon",
           "name": "selectIcon",
           "component": "/assembly/selectIcon/index",
@@ -941,6 +910,80 @@
       ]
     },
     {
+      "path": "/CI_Performance",
+      "name": "CI_Performance",
+      "redirect": "/performance/ciSwitchPerformanceDaily",
+      "meta": {
+        "icon": "DataAnalysis",
+        "title": "CI数据",
+        "isLink": "",
+        "isHide": false,
+        "isFull": false,
+        "isAffix": false,
+        "isKeepAlive": true
+      },
+      "children": [
+        {
+          "path": "/performance/ciSwitchPerformanceDaily",
+          "name": "ciSwitchPerformanceDaily",
+          "component": "/performance/ciSwitchPerformanceDaily/index",
+          "meta": {
+            "icon": "TrendCharts",
+            "title": "ci-性能开关case",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          }
+        }
+      ]
+    },
+    {
+      "path": "/performance",
+      "name": "performance",
+      "redirect": "/performance/memory",
+      "meta": {
+        "icon": "Odometer",
+        "title": "性能数据",
+        "isLink": "",
+        "isHide": false,
+        "isFull": false,
+        "isAffix": false,
+        "isKeepAlive": true
+      },
+      "children": [
+        {
+          "path": "/performance/switchPerformanceDaily",
+          "name": "switchPerformanceDaily",
+          "component": "/performance/switchPerformanceDaily/index",
+          "meta": {
+            "icon": "TrendCharts",
+            "title": "性能开关-日常均值",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          }
+        },
+        {
+          "path": "/performance/switchPerformanceData",
+          "name": "switchPerformanceData",
+          "component": "/performance/switchPerformanceData/index",
+          "meta": {
+            "icon": "SwitchFilled",
+            "title": "性能开关数据",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          }
+        }
+      ]
+    },
+    {
       "path": "/link",
       "name": "link",
       "redirect": "/link/gitee",
@@ -961,7 +1004,7 @@
           "meta": {
             "icon": "Menu",
             "title": "Gitee 仓库",
-            "isLink": "https://gitee.com/HalseySpicy/Geeker-Admin",
+            "isLink": "https://gitee.com/laramie/Geeker-Admin",
             "isHide": false,
             "isFull": false,
             "isAffix": false,
@@ -1011,20 +1054,6 @@
           }
         }
       ]
-    },
-    {
-      "path": "/about/index",
-      "name": "about",
-      "component": "/about/index",
-      "meta": {
-        "icon": "InfoFilled",
-        "title": "关于项目",
-        "isLink": "",
-        "isHide": false,
-        "isFull": false,
-        "isAffix": false,
-        "isKeepAlive": true
-      }
     }
   ],
   "msg": "成功"
